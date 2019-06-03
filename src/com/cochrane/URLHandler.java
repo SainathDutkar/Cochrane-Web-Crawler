@@ -81,55 +81,7 @@ public class URLHandler {
 		
 	}
 	
-	/*public static Elements getReviews(String pageUrl)
-	{
-		
-		String LoginUrl = "https://www.cochranelibrary.com/c/portal/login";
-		String mainPageurl ="http://www.cochranelibrary.com/";
-		Connection.Response loginForm;
-		Document homePage;
-		
-		try {
-			
-			loginForm = Jsoup.connect(LoginUrl)
-			        .method(Connection.Method.GET)
-			        .execute();
-		
-			
-			Thread.sleep(1000);
-			System.out.println(pageUrl);
-			
-			Document mainPage = Jsoup.connect(LoginUrl)
-					 .cookies(loginForm.cookies())
-					 .data("_58_login", "sgd23@njit.edu")
-		                .data("_58_password", "Sainath@4321")
-		                .post();
-			
-			Document reviews= Jsoup.connect(pageUrl)
-	                .get();
-			
-			Elements reviewsList = mainPage.getElementsByClass("search-results-item-body");
-			
-			return reviewsList;
-			
-		} catch (InterruptedException | IOException e) {
-			// TODO Auto-generated catch block
-			return null;
-		}
-		
-	}
 	
-	
-	public static boolean hasNextPage(Document reviewPage)
-	{
-		Element next = reviewPage.getElementsByClass("pagination-next-link").first();
-		System.out.println("link :"+next);
-		if(next!=null)
-			return true;
-		else
-			return false;
-	}
-	*/
 	public static ArrayList<String> getNextPagesUrl(Document reviewPage)
 	{
 		ArrayList<String> nextPages = new ArrayList<>();
@@ -138,31 +90,12 @@ public class URLHandler {
 		
 		for(Element e : allNextPages)
 		{
-		//	System.out.println(e.select("a[href]").attr("href").toString());
+		
 			nextPages.add(e.select("a[href]").attr("href").toString());
 		}
 		
 		return nextPages;
 	}
-	
-/*	public static Document getNextPage(Document reviewPage)
-	{
-		try {
-			Thread.sleep(10000);
-			Element next = reviewPage.getElementsByClass("pagination-next-link").first();
-			
-			
-			Document nextreviews = Jsoup.connect(next.select("a[href]").attr("href").toString())
-	                .get();
-			
-			return nextreviews;
-			
-		} catch (InterruptedException | IOException e) {
-			// TODO Auto-generated catch block
-			return null;
-		}
-	
-	}*/
-	
+		
 	
 }
