@@ -1,53 +1,53 @@
 package com.cochrane;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Iterator;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.jsoup.select.Evaluator;
 
 public class Crawler_Main {
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws InterruptedException {
 		// TODO Auto-generated method stub
+		
+		System.out.println("Execution Started");
+		// Initiate the first session and get cookies
+		Document homePage = URLHandler.intiateSession();
+		
+		// Get first element from the Topics List
+		Element top = URLHandler.getTopic(homePage);
 
-		Document doc = null;
-		JSONArray PageData = new JSONArray();
-		//String url = "https://www.cochranelibrary.com/en/home?p_p_id=58_INSTANCE_MODAL&amp;p_p_lifecycle=1&amp;p_p_state=normal&amp;p_p_mode=view&amp;_58_INSTANCE_MODAL_struts_action=%2Flogin%2Flogin";
-		String url ="http://www.cochranelibrary.com/";
-	//	String LoginUrl = "https://www.cochranelibrary.com/c/portal/login?p_l_id=20185&amp;redirect=%2Fhome%3Fp_p_id%3D58_INSTANCE_MODAL%26p_p_lifecycle%3D0%26p_p_state%3Dnormal%26saveLastPath%3Dfalse";
-		String LoginUrl = "https://www.cochranelibrary.com/c/portal/login";
-		try {
-			
-			 Connection.Response loginForm = Jsoup.connect(LoginUrl)
-		                .method(Connection.Method.GET)
-		                .execute();
-			 
-			 Document mainPage = Jsoup.connect(LoginUrl)
-					 .cookies(loginForm.cookies())
-		                .post();
-		                //.data("_58_login", "sgd23@njit.edu")
-		                //.data("_58_password", "Sainath@4321")
-		                
-
-		        Document evaluationPage = Jsoup.connect(url)
-		                .get();
-		       // System.out.println(evaluationPage.toString());	
-		        
-		        Elements topics = evaluationPage.getElementsByClass("browse-by-list-item");
-		        System.out.println(topics);
-		//	doc = Jsoup.connect(url).get();
-		    
-		   } catch (IOException e) {
-			   System.out.println(e);
+		// getting Document for 1st review page
+		Document reviewPage = URLHandler.getReviewsPage(top.select("a[href]").attr("href").toString());
+		
+		//Using review page to get list of all the review pages
+		ArrayList<String> allReviewsPages = URLHandler.getNextPagesUrl(reviewPage);
+		
+		// ArrayList to hold the Elements of all review pages
+		ArrayList<Elements> allReviews =  new ArrayList<>();
+		
+		// Traversing through every page to get all the reviews
+		for(String pageurl : allReviewsPages)
+		{
+			Document page = URLHandler.getReviewsPage(pageurl);
+			Elements reviews = page.getElementsByClass("search-results-item-body");
+			allReviews.add(reviews);
 		}
 		
-		
-		
+		// Write the reviews to text file
+		if(FileHandler.createFile(allReviews,top.text()))
+			{
+			System.out.println("Done");
+			};
+	
 	}
 
 }
